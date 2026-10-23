@@ -146,12 +146,12 @@ def get_diarization_pipeline(device: str, hf_token: Optional[str] = None) -> Any
 
 MLX_WHISPER_REPOS: Dict[str, str] = {
     "auto": "mlx-community/whisper-large-v3-turbo",
-    "large-v3": "mlx-community/whisper-large-v3-turbo",
+    "large-v3": "mlx-community/whisper-large-v3-mlx",
     "large-v3-full": "mlx-community/whisper-large-v3-mlx",
     "large-v3-turbo": "mlx-community/whisper-large-v3-turbo",
     "turbo": "mlx-community/whisper-large-v3-turbo",
     "large-v2": "mlx-community/whisper-large-v2-mlx",
-    "large": "mlx-community/whisper-large-v3-turbo",
+    "large": "mlx-community/whisper-large-v3-mlx",
     "medium": "mlx-community/whisper-medium-mlx",
     "medium.en": "mlx-community/whisper-medium.en-mlx",
     "small": "mlx-community/whisper-small-mlx",
@@ -475,7 +475,7 @@ def map_to_deepgram_response(
 
 def transcribe_audio_raw(
     audio_path: str,
-    model_name: str = "large-v3",
+    model_name: str = "large-v3-turbo",
     language: Optional[str] = None,
     diarize: bool = True,
     initial_prompt: Optional[str] = None,
@@ -696,7 +696,7 @@ def transcribe_audio_raw(
 
 def transcribe_and_diarize(
     audio_path: str,
-    model_name: str = "large-v3",
+    model_name: str = "large-v3-turbo",
     language: Optional[str] = None,
     diarize: bool = True,
     proper_nouns: Optional[Union[List[str], str]] = None,

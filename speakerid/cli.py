@@ -104,7 +104,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     asr_group.add_argument(
         "--whisper-model",
         default=None,
-        help="WhisperX ASR model size (default: env WHISPER_MODEL or 'large-v3'; maps to 'large-v3-turbo' on Apple Silicon MLX, or pass 'large-v3-full' for 32-layer MLX).",
+        help="WhisperX ASR model size (default: env WHISPER_MODEL or 'large-v3-turbo'; pass 'large-v3' for the 32-layer decoder).",
     )
     asr_group.add_argument(
         "--language",

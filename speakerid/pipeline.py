@@ -86,7 +86,7 @@ def create_smart_transcript(
     title: Optional[str] = None,
     media_url: Optional[str] = None,
     jurisdiction: Optional[str] = None,
-    whisper_model: str = "large-v3",
+    whisper_model: Optional[str] = "large-v3-turbo",
     language: Optional[str] = None,
     diarize: bool = True,
     device: str = "auto",
@@ -138,7 +138,7 @@ def create_smart_transcript(
     resolved_whisper_model = (
         whisper_model
         or os.environ.get("WHISPER_MODEL")
-        or "large-v3"
+        or "large-v3-turbo"
     )
 
     # 2. Obtain Deepgram-compatible transcription & diarization

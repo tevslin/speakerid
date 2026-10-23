@@ -20,18 +20,18 @@ Unlike a conventional raw transcript, a **SmartTranscript™** combines four syn
 ### Live Production Example & Relationship to Earlier Repositories
 * **[goldendomevt.com](https://goldendomevt.com)** is a live production site built with **SmartTranscripts™**, providing verifiable, video-linked transcripts of floor and committee meetings of the Vermont Legislature.
 * **Updated & Improved Transcription Engine**: The transcription, alignment, diarization, and speaker-identification code in this repository (`tevslin/speakerid`) is **later and better** than the earlier transcription code in [`tevslin/smarttranscripts`](https://github.com/tevslin/smarttranscripts) and [`tevslin/goldendomevt`](https://github.com/tevslin/goldendomevt). Specifically, `speakerid` introduces:
-  * Local GPU **WhisperX (`faster-whisper` large-v3)** with custom decoding tuning, proper-noun prompt sanitization/token-truncation, **Wav2Vec2** phonetic alignment, and **PyAnnote 3.1** speaker diarization.
+  * Local GPU **WhisperX (`faster-whisper` / `mlx-whisper` `large-v3-turbo` by default, or `large-v3`)** with custom decoding tuning, proper-noun prompt sanitization/token-truncation, **Wav2Vec2** phonetic alignment, and **PyAnnote 3.1** speaker diarization.
   * **Time-bound speaker overlap overrides** (handling mid-meeting speaker handoffs and crosstalk).
   * **A localized, pluggable LLM architecture (`speakerid.llm`)** that removes cloud/vendor lock-in so you can substitute any local LLM (Ollama, vLLM, LM Studio, `llama.cpp`) or remote LLM (Gemini, OpenAI, Anthropic, LiteLLM).
 
 ### Hardware Acceleration Matrix
 
-| Operating System | Hardware | `--device auto` Behavior (Default) |
+| Operating System | Hardware | `--device auto` Behavior (Default Model: `large-v3-turbo`) |
 | :--- | :--- | :--- |
-| **Windows PC** | NVIDIA GPU (CUDA 12.x) | Uses `cuda` (`float16`) for WhisperX ASR, Wav2Vec2 alignment, and PyAnnote diarization. |
-| **Linux** | NVIDIA GPU (CUDA 12.x) | Uses `cuda` (`float16`) for WhisperX ASR, Wav2Vec2 alignment, and PyAnnote diarization. |
-| **macOS** | Apple Silicon (M1/M2/M3/M4) | Uses `mlx` (`float16` Apple Metal GPU with `large-v3-turbo` by default; pass `--whisper-model large-v3-full` for 32-layer `large-v3` or falls back to `cpu`/`int8` if `mlx-whisper` is absent) and Apple Metal (`mps`) for PyTorch alignment & diarization. |
-| **Any OS** | CPU-only | Automatically falls back to `cpu` (`int8`). |
+| **Windows PC** | NVIDIA GPU (CUDA 12.x) | Uses `cuda` (`float16` `large-v3-turbo` by default; pass `--whisper-model large-v3` for 32-layer decoder) for WhisperX ASR, Wav2Vec2 alignment, and PyAnnote diarization. |
+| **Linux** | NVIDIA GPU (CUDA 12.x) | Uses `cuda` (`float16` `large-v3-turbo` by default; pass `--whisper-model large-v3` for 32-layer decoder) for WhisperX ASR, Wav2Vec2 alignment, and PyAnnote diarization. |
+| **macOS** | Apple Silicon (M1/M2/M3/M4) | Uses `mlx` (`float16` Apple Metal GPU with `large-v3-turbo` by default; pass `--whisper-model large-v3` for 32-layer decoder or falls back to `cpu`/`int8` if `mlx-whisper` is absent) and Apple Metal (`mps`) for PyTorch alignment & diarization. |
+| **Any OS** | CPU-only | Automatically falls back to `cpu` (`int8` `large-v3-turbo`). |
 
 ---
 
