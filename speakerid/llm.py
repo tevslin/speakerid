@@ -39,13 +39,23 @@ from typing import Any, Callable, Dict, Optional
 logger = logging.getLogger(__name__)
 
 
+def _clean_api_key(val: Optional[str]) -> Optional[str]:
+    """Returns `None` if an API key is empty or still set to a `.env` `DUMMY` placeholder."""
+    if not val:
+        return None
+    stripped = val.strip()
+    if not stripped or "DUMMY" in stripped.upper():
+        return None
+    return stripped
+
+
 @dataclass
 class LLMConfig:
     """Configuration parameters for initializing an LLM provider."""
     provider: str = field(default_factory=lambda: os.environ.get("LLM_PROVIDER", "gemini"))
     model: str = field(default_factory=lambda: os.environ.get("LLM_MODEL", ""))
     base_url: Optional[str] = field(default_factory=lambda: os.environ.get("LLM_BASE_URL"))
-    api_key: Optional[str] = field(default_factory=lambda: os.environ.get("LLM_API_KEY"))
+    api_key: Optional[str] = field(default_factory=lambda: _clean_api_key(os.environ.get("LLM_API_KEY")))
     temperature: float = 0.1
     max_tokens: Optional[int] = None
     timeout: float = 600.0
@@ -96,8 +106,8 @@ class OpenAICompatibleProvider(LLMProvider):
         self.model = config.model or "gpt-4o-mini"
         self.base_url = (config.base_url or "https://api.openai.com/v1").rstrip("/")
         self.api_key = (
-            config.api_key
-            or os.environ.get("OPENAI_API_KEY")
+            _clean_api_key(config.api_key)
+            or _clean_api_key(os.environ.get("OPENAI_API_KEY"))
             or "local-no-key-required"
         )
 
@@ -216,9 +226,9 @@ class GeminiProvider(LLMProvider):
         self.config = config
         self.model = config.model or "gemini-2.5-flash"
         self.api_key = (
-            config.api_key
-            or os.environ.get("GEMINI_API_KEY")
-            or os.environ.get("GOOGLE_API_KEY")
+            _clean_api_key(config.api_key)
+            or _clean_api_key(os.environ.get("GEMINI_API_KEY"))
+            or _clean_api_key(os.environ.get("GOOGLE_API_KEY"))
         )
         if not self.api_key:
             raise ValueError(
@@ -279,7 +289,7 @@ class AnthropicProvider(LLMProvider):
         """Initializes the Anthropic Claude provider."""
         self.config = config
         self.model = config.model or "claude-3-5-sonnet-latest"
-        self.api_key = config.api_key or os.environ.get("ANTHROPIC_API_KEY")
+        self.api_key = _clean_api_key(config.api_key) or _clean_api_key(os.environ.get("ANTHROPIC_API_KEY"))
         if not self.api_key:
             raise ValueError(
                 "Anthropic API key not found. Set ANTHROPIC_API_KEY or pass api_key in LLMConfig."
