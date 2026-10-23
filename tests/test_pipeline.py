@@ -13,6 +13,8 @@ import tempfile
 import unittest
 from typing import Any, Dict
 
+from unittest.mock import patch
+
 from speakerid import (
     LLMProvider,
     create_smart_transcript,
@@ -22,7 +24,12 @@ from speakerid.speaker_id import (
     process_deepgram_output,
     resolve_speaker_mappings,
 )
-from speakerid.transcribe import map_to_deepgram_response
+from speakerid.transcribe import (
+    has_mlx_whisper,
+    map_to_deepgram_response,
+    resolve_compute_device_and_type,
+    resolve_mlx_model_repo,
+)
 
 
 class MockLLMProvider(LLMProvider):
@@ -170,6 +177,35 @@ class TestSpeakerIdPipeline(unittest.TestCase):
             self.assertIn("[Patrick Murphy (AOT)]:", saved_html)
             self.assertIn("[Claire Nelson (UVM)]:", saved_html)
             self.assertIn("Call to Order (00:00:00)", saved_html)
+
+    def test_device_resolution_and_mlx_helpers(self) -> None:
+        """Verifies CUDA, CPU, and Apple Silicon MLX/MPS device resolution and MLX repo mapping."""
+        self.assertEqual(resolve_mlx_model_repo("large-v3"), "mlx-community/whisper-large-v3-mlx")
+        self.assertEqual(resolve_mlx_model_repo("turbo"), "mlx-community/whisper-large-v3-turbo")
+        self.assertEqual(resolve_mlx_model_repo("custom/org-model"), "custom/org-model")
+        self.assertIsInstance(has_mlx_whisper(), bool)
+
+        # Simulated Apple Silicon with MLX available
+        with patch("torch.cuda.is_available", return_value=False), \
+             patch("torch.backends.mps.is_available", return_value=True), \
+             patch("speakerid.transcribe.has_mlx_whisper", return_value=True):
+            (w_dev, w_comp), t_dev = resolve_compute_device_and_type("auto", "auto")
+            self.assertEqual((w_dev, w_comp), ("mlx", "float16"))
+            self.assertEqual(t_dev, "mps")
+
+        # Simulated Apple Silicon without MLX installed (fallback to CPU/int8 + MPS)
+        with patch("torch.cuda.is_available", return_value=False), \
+             patch("torch.backends.mps.is_available", return_value=True), \
+             patch("speakerid.transcribe.has_mlx_whisper", return_value=False):
+            (w_dev, w_comp), t_dev = resolve_compute_device_and_type("auto", "auto")
+            self.assertEqual((w_dev, w_comp), ("cpu", "int8"))
+            self.assertEqual(t_dev, "mps")
+
+        # Simulated Windows/Linux with NVIDIA CUDA available
+        with patch("torch.cuda.is_available", return_value=True):
+            (w_dev, w_comp), t_dev = resolve_compute_device_and_type("auto", "auto")
+            self.assertEqual((w_dev, w_comp), ("cuda", "float16"))
+            self.assertEqual(t_dev, "cuda")
 
 
 if __name__ == "__main__":
