@@ -120,15 +120,20 @@ def get_diarization_pipeline(device: str, hf_token: Optional[str] = None) -> Any
     """Loads and caches the PyAnnote speaker diarization pipeline."""
     global _diarize_pipeline
     if _diarize_pipeline is None:
+        os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
         token = hf_token or os.environ.get("HF_TOKEN")
         if not token:
             logger.warning(
                 "HF_TOKEN is not set. PyAnnote speaker diarization requires a Hugging Face token "
                 "with access to pyannote/speaker-diarization-3.1."
             )
+        diarize_model = os.environ.get(
+            "SPEAKERID_DIARIZE_MODEL", "pyannote/speaker-diarization-3.1"
+        )
         import whisperx.diarize
 
         _diarize_pipeline = whisperx.diarize.DiarizationPipeline(
+            model_name=diarize_model,
             token=token,
             device=device,
         )

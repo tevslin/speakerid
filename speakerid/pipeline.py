@@ -40,12 +40,12 @@ def load_dotenv_if_present(dotenv_path: Optional[str] = None) -> None:
     candidates = [dotenv_path] if dotenv_path else [".env", os.path.join(os.getcwd(), ".env")]
     for path in candidates:
         if path and os.path.exists(path):
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, "r", encoding="utf-8-sig") as f:
                 for line in f:
                     line = line.strip()
                     if line and not line.startswith("#") and "=" in line:
                         k, v = line.split("=", 1)
-                        k = k.strip()
+                        k = k.strip().lstrip("\ufeff")
                         v = v.strip().strip('"').strip("'")
                         if k and k not in os.environ:
                             os.environ[k] = v

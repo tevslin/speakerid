@@ -18,12 +18,13 @@ dependencies = [
 
 [project.optional-dependencies]
 gpu = [
-    "torch>=2.1.0",
-    "torchaudio>=2.1.0",
+    "torch~=2.8.0",
+    "torchaudio~=2.8.0",
+    "torchvision~=0.23.0",
     "pytorch-lightning>=2.2.0",
     "pyannote.audio>=3.1.1",
     "whisperx @ git+https://github.com/m-bain/whisperx.git",
-    "numpy<2",
+    "numpy>=2.1.0",
 ]
 gemini = [
     "google-genai>=1.0.0",

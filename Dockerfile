@@ -10,8 +10,8 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip and pin numpy<2 for pyannote/whisperx compatibility
-RUN pip install --no-cache-dir --upgrade pip "numpy<2"
+# Upgrade pip
+RUN pip install --no-cache-dir --upgrade pip
 
 # Install WhisperX, PyAnnote, and speakerid dependencies
 COPY requirements.txt /app/requirements.txt

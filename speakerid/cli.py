@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from speakerid.llm import LLMConfig
-from speakerid.pipeline import create_smart_transcript
+from speakerid.pipeline import create_smart_transcript, load_dotenv_if_present
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -187,6 +187,7 @@ def run_cli(argv: Optional[List[str]] = None) -> int:
         format="%(asctime)s - %(levelname)s - %(message)s",
         stream=sys.stdout,
     )
+    load_dotenv_if_present()
     parser = build_arg_parser()
     args = parser.parse_args(argv)
 

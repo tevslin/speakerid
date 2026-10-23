@@ -52,21 +52,20 @@ PyAnnote's speaker diarization model weights are hosted on Hugging Face behind a
 # 1. Install FFmpeg (skip if `ffmpeg -version` already works)
 winget install Gyan.FFmpeg
 
-# 2. Clone repository and create virtual environment
+# 2. Clone repository and create virtual environment (Python 3.10 - 3.12 recommended)
 git clone https://github.com/tevslin/speakerid.git
 cd speakerid
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 
-# 3. Install PyTorch with CUDA 12.1 support (recommended for NVIDIA GPUs on Windows)
-pip install --upgrade pip "numpy<2"
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-
-# 4. Install WhisperX, PyAnnote, and speakerid
+# 3. Install PyTorch (CUDA 12.8), WhisperX, PyAnnote, and speakerid
+# Note: requirements.txt includes `--extra-index-url https://download.pytorch.org/whl/cu128`
+# and pins matching torch==2.8.0 / torchaudio==2.8.0 / torchvision==0.23.0 wheels
+pip install --upgrade pip
 pip install -r requirements.txt
 pip install -e .
 
-# 5. Fill in your tokens/passwords in .env
+# 4. Fill in your tokens/passwords in .env
 # Edit the included .env file and replace the dummy placeholder values (HF_TOKEN, etc.) with your real credentials
 ```
 
@@ -85,7 +84,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 # 3. Install PyTorch, WhisperX, PyAnnote, and speakerid
-pip install --upgrade pip "numpy<2"
+pip install --upgrade pip
 pip install -r requirements.txt
 pip install -e .
 
@@ -107,9 +106,8 @@ cd speakerid
 python3 -m venv .venv
 source .venv/bin/activate
 
-# 3. Install PyTorch (CUDA 12.1) + WhisperX + PyAnnote + speakerid
-pip install --upgrade pip "numpy<2"
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+# 3. Install PyTorch (CUDA 12.8) + WhisperX + PyAnnote + speakerid
+pip install --upgrade pip
 pip install -r requirements.txt
 pip install -e .
 
