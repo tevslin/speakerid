@@ -103,8 +103,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     asr_group = parser.add_argument_group("WhisperX & Diarization Options (GPU/CPU)")
     asr_group.add_argument(
         "--whisper-model",
-        default="large-v3",
-        help="WhisperX ASR model size (default: large-v3).",
+        default=None,
+        help="WhisperX ASR model size (default: env WHISPER_MODEL or 'large-v3'; maps to 'large-v3-turbo' on Apple Silicon MLX, or pass 'large-v3-full' for 32-layer MLX).",
     )
     asr_group.add_argument(
         "--language",

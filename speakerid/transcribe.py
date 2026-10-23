@@ -145,11 +145,13 @@ def get_diarization_pipeline(device: str, hf_token: Optional[str] = None) -> Any
 
 
 MLX_WHISPER_REPOS: Dict[str, str] = {
-    "large-v3": "mlx-community/whisper-large-v3-mlx",
+    "auto": "mlx-community/whisper-large-v3-turbo",
+    "large-v3": "mlx-community/whisper-large-v3-turbo",
+    "large-v3-full": "mlx-community/whisper-large-v3-mlx",
     "large-v3-turbo": "mlx-community/whisper-large-v3-turbo",
     "turbo": "mlx-community/whisper-large-v3-turbo",
     "large-v2": "mlx-community/whisper-large-v2-mlx",
-    "large": "mlx-community/whisper-large-v3-mlx",
+    "large": "mlx-community/whisper-large-v3-turbo",
     "medium": "mlx-community/whisper-medium-mlx",
     "medium.en": "mlx-community/whisper-medium.en-mlx",
     "small": "mlx-community/whisper-small-mlx",
@@ -530,14 +532,25 @@ def transcribe_audio_raw(
             import mlx_whisper
 
             mlx_repo = resolve_mlx_model_repo(model_name)
+            logger.info(f"Using MLX Whisper model repository: {mlx_repo}")
             if initial_prompt:
                 words = initial_prompt.split()
                 if len(words) > 300:
                     initial_prompt = " ".join(words[:300])
 
-            temp_val = config.get("temperature", (0.0, 0.2, 0.4, 0.6, 0.8, 1.0))
+            temp_val = config.get("temperature", 0.0)
             if isinstance(temp_val, list):
                 temp_val = tuple(float(t) for t in temp_val)
+            # In mlx_whisper, passing a temperature fallback tuple triggers full 30s window
+            # re-decodes on noisy/crosstalk windows; greedy decoding (0.0) with
+            # condition_on_previous_text=False is ~2x faster and prevents repetition loops.
+            if whisper_config is None or "temperature" not in whisper_config:
+                temp_val = 0.0
+            cond_prev = (
+                config.get("condition_on_previous_text", False)
+                if (whisper_config and "condition_on_previous_text" in whisper_config)
+                else False
+            )
 
             mlx_kwargs: Dict[str, Any] = {
                 "path_or_hf_repo": mlx_repo,
@@ -545,7 +558,7 @@ def transcribe_audio_raw(
                 "compression_ratio_threshold": config.get("compression_ratio_threshold", 2.0),
                 "logprob_threshold": config.get("log_prob_threshold", -1.0),
                 "no_speech_threshold": config.get("no_speech_threshold", 0.6),
-                "condition_on_previous_text": config.get("condition_on_previous_text", True),
+                "condition_on_previous_text": cond_prev,
                 "initial_prompt": initial_prompt,
             }
             if language:

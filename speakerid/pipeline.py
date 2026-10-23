@@ -135,6 +135,12 @@ def create_smart_transcript(
         or (Path(audio_path).name if audio_path else "")
     )
 
+    resolved_whisper_model = (
+        whisper_model
+        or os.environ.get("WHISPER_MODEL")
+        or "large-v3"
+    )
+
     # 2. Obtain Deepgram-compatible transcription & diarization
     if precomputed_transcription is not None:
         if isinstance(precomputed_transcription, str):
@@ -148,7 +154,7 @@ def create_smart_transcript(
             raise ValueError("Either `audio_path` or `precomputed_transcription` must be provided.")
         deepgram_data = transcribe_and_diarize(
             audio_path=audio_path,
-            model_name=whisper_model,
+            model_name=resolved_whisper_model,
             language=language,
             diarize=diarize,
             proper_nouns=merged_proper_nouns,

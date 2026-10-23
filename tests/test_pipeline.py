@@ -180,7 +180,8 @@ class TestSpeakerIdPipeline(unittest.TestCase):
 
     def test_device_resolution_and_mlx_helpers(self) -> None:
         """Verifies CUDA, CPU, and Apple Silicon MLX/MPS device resolution and MLX repo mapping."""
-        self.assertEqual(resolve_mlx_model_repo("large-v3"), "mlx-community/whisper-large-v3-mlx")
+        self.assertEqual(resolve_mlx_model_repo("large-v3"), "mlx-community/whisper-large-v3-turbo")
+        self.assertEqual(resolve_mlx_model_repo("large-v3-full"), "mlx-community/whisper-large-v3-mlx")
         self.assertEqual(resolve_mlx_model_repo("turbo"), "mlx-community/whisper-large-v3-turbo")
         self.assertEqual(resolve_mlx_model_repo("custom/org-model"), "custom/org-model")
         self.assertIsInstance(has_mlx_whisper(), bool)
