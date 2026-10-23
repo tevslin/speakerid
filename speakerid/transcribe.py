@@ -92,17 +92,33 @@ def configure_model_cache_dir(model_cache_dir: Optional[str] = None) -> None:
 
 
 def get_whisper_model(model_name: str, device: str, compute_type: str) -> Any:
-    """Loads and caches the WhisperX ASR model of the specified size."""
+    """Loads and caches the WhisperX ASR model of the specified size (with single-worker download fallback on Windows TLS resets)."""
     import whisperx
 
     key = f"{model_name}_{device}_{compute_type}"
     if key not in _whisper_models:
-        _whisper_models[key] = whisperx.load_model(
-            model_name,
-            device,
-            compute_type=compute_type,
-            download_root=None,
-        )
+        try:
+            _whisper_models[key] = whisperx.load_model(
+                model_name,
+                device,
+                compute_type=compute_type,
+                download_root=None,
+            )
+        except Exception as e:
+            logger.warning(
+                f"Initial faster-whisper model load interrupted ({e}); retrying snapshot download with max_workers=1..."
+            )
+            import faster_whisper.utils
+            import huggingface_hub
+
+            repo_id = faster_whisper.utils._MODELS.get(model_name, model_name)
+            local_dir = huggingface_hub.snapshot_download(repo_id, max_workers=1)
+            _whisper_models[key] = whisperx.load_model(
+                local_dir,
+                device,
+                compute_type=compute_type,
+                download_root=None,
+            )
     return _whisper_models[key]
 
 
