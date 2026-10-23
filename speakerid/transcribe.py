@@ -33,8 +33,12 @@ import re
 import threading
 import time
 import uuid
+import warnings
 from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+
+# Suppress benign pyannote torchcodec import warning on Windows (speakerid passes preloaded waveforms)
+warnings.filterwarnings("ignore", message=".*torchcodec is not installed correctly.*")
 
 from speakerid.schemas import (
     Alternative,

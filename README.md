@@ -207,7 +207,7 @@ llm_cfg = LLMConfig(
 
 # 2. Run the full pipeline (ASR + Alignment + Diarization + Speaker ID + Derived Agenda/Summaries + JSON/HTML)
 result = create_smart_transcript(
-    audio_path="audio.m4a",
+    audio_path="audio.m4a",             # or omit audio_path and pass precomputed_transcription="transcript.json" to skip GPU ASR
     hints="examples/sample_info.json",  # optional path to info.json, .txt, dict, or raw hint string
     output_json_path="transcript.json", # optional: write structured JSON
     output_html_path="transcript.html", # optional: write interactive SmartTranscript™ HTML viewer
