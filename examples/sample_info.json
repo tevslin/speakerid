@@ -1,0 +1,44 @@
+{
+    "title": "Senate Transportation - 2026-04-10 - 10:40AM",
+    "video_url": "https://www.youtube.com/watch?v=T8uEA-lphcE",
+    "jurisdiction": "Vermont Legislature",
+    "parent_committee": "Senate",
+    "committee": "Transportation",
+    "members": [
+        {
+            "name": "Richard Westman",
+            "title": "Chair",
+            "district": "Lamoille District"
+        },
+        {
+            "name": "Rebecca \"Becca\" White",
+            "title": "Vice Chair",
+            "district": "Windsor District"
+        },
+        {
+            "name": "Wendy Harrison",
+            "title": "Clerk",
+            "district": "Windham District"
+        },
+        {
+            "name": "Andrew Perchlik",
+            "title": "Member",
+            "district": "Washington District"
+        },
+        {
+            "name": "Patrick \"Pat\" Brennan",
+            "title": "Member",
+            "district": "Grand Isle District"
+        }
+    ],
+    "witnesses": [
+        "Patrick Murphy (State Policy Director, Vermont Agency of Transportation)",
+        "Claire Nelson (UVM Transportation Research Center)"
+    ],
+    "proper_nouns": [
+        "UVM",
+        "AOT",
+        "MBUF",
+        "DMV"
+    ]
+}

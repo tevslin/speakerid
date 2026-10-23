@@ -1,0 +1,13 @@
+# Core schema & validation
+pydantic>=2.0.0
+numpy<2
+
+# Local GPU Transcription, Phonetic Alignment & Speaker Diarization
+torch>=2.1.0
+torchaudio>=2.1.0
+pytorch-lightning>=2.2.0
+pyannote.audio>=3.1.1
+git+https://github.com/m-bain/whisperx.git
+
+# Optional SDKs (Note: Ollama, OpenAI-compatible, vLLM, LM Studio, Anthropic, and Gemini REST work out-of-the-box via standard library HTTP)
+google-genai>=1.0.0

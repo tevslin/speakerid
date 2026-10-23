@@ -1,0 +1,24 @@
+{
+    "links": [
+        {
+            "label": "All 2025 VT SmartTranscripts",
+            "url": "/archive.html"
+        },
+        {
+            "label": "San Francisco SmartTranscripts",
+            "url": "https://sfgovernmentconnection.com"
+        },
+        {
+            "label": "New York Legislature SmartTranscripts",
+            "url": "https://nys.smarttranscriptsai.com"
+        },
+        {
+            "label": "Connecticut Legislature SmartTranscripts",
+            "url": "https://theconnecticutmirror.com/"
+        },
+        {
+            "label": "VT Legislative Website",
+            "url": "https://legislature.vermont.gov"
+        }
+    ]
+}

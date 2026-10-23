@@ -1,0 +1,1318 @@
+/* Basic Body and Layout */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    /* Full viewport height */
+    overflow: hidden;
+    /* No main scrollbar */
+}
+
+#main-content {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 12px;
+    /* Add padding to create separation */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#app-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    /* Changed from 100vh to 100% since global header eats top space now */
+    overflow: hidden;
+    background-color: #fff;
+    flex-grow: 1;
+    /* allow it to fill space under global header */
+}
+
+/* --- Global Header --- */
+#global-header {
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.global-header-title-group {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.global-header-title-group h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #323130;
+}
+
+.global-header-title-group h1 a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.global-header-title-group h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #605e5c;
+}
+
+#header-banner {
+    height: 48px;
+    max-height: 48px;
+    object-fit: contain;
+}
+
+/* --- Column Headers --- */
+.column-header {
+    background: #fdfdfd;
+    border-bottom: 1px solid #d0d0d0;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    /* Explicit height to guarantee matching between left column and right wrapper */
+    height: 50px;
+    box-sizing: border-box;
+}
+
+.column-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #252525;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Right Columns Wrapper Layout --- */
+#right-columns-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    /* Prevents flex blowout */
+    min-height: 0;
+}
+
+#right-column-header {
+    border-bottom: 1px solid #ddd;
+    background: #fff;
+}
+
+#right-columns-content {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* --- Unified Shell Components --- */
+.pane {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #fff;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.pane-header {
+    height: 48px;
+    background: #f3f2f1;
+    border-bottom: 1px solid #edebe9;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    flex-shrink: 0;
+    justify-content: space-between;
+}
+
+.pane-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #323130;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+    margin-right: 15px;
+}
+
+.pane-tabs {
+    display: flex;
+    height: 100%;
+    border-bottom: 1px solid #ddd;
+}
+
+.pane-tab {
+    flex-grow: 1;
+    padding: 0.75rem 0.5rem;
+    background: #eee;
+    border: none;
+    border-right: 1px solid #ddd;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #333;
+    transition: background-color 0.2s;
+    font-weight: 400;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.pane-tab:last-child {
+    border-right: none;
+}
+
+.pane-tab:hover:not(.active) {
+    background: #e0e0e0;
+    color: #323130;
+}
+
+.pane-tab.active {
+    background: #fff;
+    font-weight: bold;
+    color: #005a9c;
+}
+
+.tab-content {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.tab-content.active {
+    display: flex;
+    flex-direction: column;
+}
+
+.pane-content {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Middle Pane specific overrides */
+#content-container.pane {
+    flex: 1;
+    /* Take remaining space */
+    min-width: 400px;
+}
+
+/* --- Search UI --- */
+.search-box {
+    padding: 12px;
+    background-color: #faf9f8;
+    border-bottom: 1px solid #edebe9;
+    display: flex;
+    gap: 8px;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid #d2d0ce;
+    border-radius: 2px;
+    font-size: 13px;
+    outline-color: #0078d4;
+}
+
+.search-box button {
+    padding: 6px 12px;
+    background: #0078d4;
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.search-box button:hover {
+    background: #106ebe;
+}
+
+.search-results {
+    padding: 4px 0;
+}
+
+.search-results-item {
+    padding: 8px 16px;
+    border-bottom: 1px solid #f3f2f1;
+    cursor: pointer;
+}
+
+.search-results-item:hover {
+    background-color: #f3f2f1;
+}
+
+/* --- Semantic Search Layout --- */
+.search-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    padding: 0 12px;
+}
+
+.search-filter-select {
+    flex: 1;
+    min-width: 0;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.search-info {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 15px;
+    padding: 0 12px;
+}
+
+.search-loader {
+    display: none;
+    font-size: 12px;
+    color: #007bff;
+    margin-bottom: 15px;
+    padding: 0 12px;
+}
+
+/* --- Meeting Result Cards (Semantic Search) --- */
+.meeting-result-card {
+    background: #fff;
+    border: 1px solid #e1dfdd;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    margin-left: 12px;
+    margin-right: 12px;
+    overflow: hidden;
+}
+
+.meeting-card-header {
+    padding: 10px 12px;
+    background: #f8f8f8;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    border-bottom: 1px solid transparent;
+    /* only visible when expanded */
+}
+
+.meeting-card-header:hover {
+    background: #f0f0f0;
+}
+
+.accordion-caret {
+    font-size: 10px;
+    color: #605e5c;
+    margin-top: 4px;
+    transition: transform 0.2s ease;
+}
+
+.meeting-meta {
+    flex: 1;
+}
+
+.meeting-title {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: #0078d4;
+    line-height: 1.3;
+}
+
+.meeting-date {
+    font-size: 12px;
+    color: #605e5c;
+    display: flex;
+    justify-content: space-between;
+}
+
+.match-badge {
+    background: #e1dfdd;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    color: #323130;
+}
+
+.snippets-wrapper {
+    background: #fff;
+}
+
+.snippet-item {
+    padding: 10px 12px 10px 24px;
+    border-bottom: 1px solid #f3f2f1;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.snippet-item:last-child {
+    border-bottom: none;
+}
+
+.snippet-item a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.snippet-item a:hover {
+    background-color: #fdfdfd;
+}
+
+.snippet-time {
+    display: inline-block;
+    background: #e1dfdd;
+    color: #0078d4;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 11px;
+    margin-right: 6px;
+}
+
+.snippet-item b {
+    color: #000;
+    background-color: #fff4ce;
+    /* gentle yellow highlight */
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* Accordion States */
+.meeting-result-card.collapsed .meeting-card-header {
+    border-bottom: none;
+}
+
+.meeting-result-card.collapsed .accordion-caret {
+    transform: rotate(0deg);
+    /* pointing right */
+}
+
+/* In collapsed state, hide the snippets entirely to keep the list clean */
+.meeting-result-card.collapsed .snippets-wrapper {
+    display: none;
+}
+
+.meeting-result-card.expanded .meeting-card-header {
+    border-bottom: 1px solid #e1dfdd;
+}
+
+.meeting-result-card.expanded .accordion-caret {
+    transform: rotate(90deg);
+    /* pointing down */
+}
+
+/* --- ToC Pane Styles --- */
+#toc-pane {
+    width: 250px;
+    min-width: 200px;
+    max-width: 600px;
+    background: #f0f0f0;
+    /* Outlook sidebar gray */
+    border-right: 1px solid #d0d0d0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+    z-index: 100;
+    height: 100%;
+    flex-shrink: 0;
+    font-size: 14px;
+}
+
+#toc-pane.pinned {
+    transform: translateX(0);
+}
+
+#toc-pane.unpinned {
+    position: relative;
+    /* Take up space in layout */
+    width: 32px !important;
+    min-width: 32px !important;
+    overflow: visible;
+    /* Allow flyout to overflow */
+    cursor: pointer;
+    background: #f0f0f0;
+    border-right: 1px solid #ccc;
+    z-index: 200;
+    transition: width 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 12px;
+}
+
+/* Hide the wrapper (header + content) when unpinned and NOT expanded */
+#toc-pane.unpinned:not(.expanded) #toc-wrapper {
+    display: none;
+}
+
+/* Hide resize handle when unpinned */
+#toc-pane.unpinned #toc-resize-handle {
+    display: none;
+}
+
+/* Vertical Text "Meetings" */
+#toc-pane.unpinned::before {
+    content: 'Meetings';
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    /* Top to bottom */
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    white-space: nowrap;
+    margin-bottom: 8px;
+    order: 2;
+    /* Text below icon */
+}
+
+/* Right Caret Icon */
+#toc-pane.unpinned::after {
+    content: '▶';
+    font-size: 10px;
+    color: #555;
+    margin-bottom: 8px;
+    order: 1;
+    /* Icon at top */
+}
+
+/* Expanded State (Flyout) */
+#toc-pane.unpinned.expanded {
+    /* Width stays 32px to not shift content! */
+    width: 32px !important;
+}
+
+#toc-pane.unpinned.expanded #toc-wrapper {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: 32px;
+    /* Start after the strip */
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: #f0f0f0;
+    border-right: 1px solid #ccc;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+/* Ensure content inside wrapper behaves */
+#toc-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hide strip content when expanded?
+   User might want to see it or it might look weird if the flyout is next to it.
+   If flyout is next to it (left: 32px), we keep the strip visible.
+   If we want to cover it, left: 0.
+   User said "should not overlap the navigation pane".
+   The strip takes space. The flyout overlaps.
+   Let's keep the strip visible so it acts as the anchor.
+*/
+
+/* Hide hamburger (removed in replacement) */
+
+#toc-header {
+    padding: 0 16px;
+    height: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f0f0f0;
+    flex-shrink: 0;
+}
+
+#toc-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #252525;
+}
+
+#toc-pin-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #666;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+#toc-pin-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+#toc-content-slot {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+}
+
+/* --- ToC Pane Sections (Dynamic) --- */
+#toc-meetings-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#toc-links-section {
+    flex: 0 0 auto;
+    max-height: 25%;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid #d0d0d0;
+    min-height: 0;
+}
+
+#links-header {
+    padding: 0 16px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    background: #f0f0f0;
+    flex-shrink: 0;
+}
+
+#links-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #252525;
+}
+
+#links-container-slot {
+    flex-grow: 1;
+    overflow-y: auto;
+    background: #f8f8f8;
+}
+
+#toc-resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    cursor: ew-resize;
+    background: transparent;
+    z-index: 101;
+}
+
+#toc-resize-handle:hover {
+    background: #0078d4;
+    /* Outlook blue on hover */
+}
+
+/* Directory Tree Styles */
+.toc-list,
+.nested {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nested {
+    display: none;
+    padding-left: 16px !important;
+    /* Use padding for indentation, force override */
+    margin-left: 0 !important;
+}
+
+/* Ensure root list has no margin/padding */
+.toc-list {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+}
+
+.nested.active {
+    display: block;
+}
+
+/* Common Item Styles */
+.toc-folder-row,
+.toc-link {
+    display: flex;
+    align-items: center;
+    padding: 1px 16px 1px 8px;
+    /* Right padding for scrollbar space */
+    cursor: pointer;
+    user-select: none;
+    color: #252525;
+    text-decoration: none;
+    min-height: 18px;
+    border-left: 3px solid transparent;
+    /* For active state marker */
+}
+
+.toc-folder-row:hover,
+.toc-link:hover {
+    background-color: #e1dfdd;
+    /* Hover gray */
+}
+
+/* Active State */
+.toc-link.active-meeting {
+    background-color: #c7e0f4;
+    /* Selection blue */
+    border-left-color: #0078d4;
+    /* Blue marker */
+    font-weight: 500;
+}
+
+/* Toggle (Chevron) */
+.toc-toggle,
+.toc-toggle-spacer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+    flex-shrink: 0;
+    /* Prevent shrinking */
+}
+
+.toc-toggle {
+    color: #605e5c;
+    transition: transform 0.1s ease;
+    font-size: 10px;
+    /* Small chevron */
+}
+
+.toc-toggle::before {
+    content: '▶';
+    /* Fallback */
+    font-family: 'Segoe UI Symbol', sans-serif;
+    font-size: 8px;
+}
+
+/* Use a better chevron if possible, or CSS shape */
+.toc-toggle::before {
+    content: '';
+    border: solid #605e5c;
+    border-width: 0 1.5px 1.5px 0;
+    display: inline-block;
+    padding: 2.5px;
+    transform: rotate(-45deg);
+    margin-left: -2px;
+}
+
+.toc-toggle.open {
+    transform: rotate(90deg);
+}
+
+/* Icons */
+.toc-icon {
+    margin-right: 8px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #605e5c;
+}
+
+.folder-icon::before {
+    content: '📁';
+    /* Fallback */
+}
+
+/* Hide fallback if we use CSS shapes or SVGs later. For now, emoji is okay but maybe too colorful. 
+   Let's try to use a monochrome folder look or just the emoji if user didn't provide assets.
+   Outlook uses monochrome icons usually.
+*/
+.folder-icon {
+    /* Monochrome icon support */
+    opacity: 0.8;
+}
+
+.document-icon::before {
+    content: '📄';
+}
+
+.toc-label,
+.toc-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+}
+
+
+
+/* --- Navigation Pane (Left Pane) --- */
+/* --- Navigation Pane (Left Pane) --- */
+#left-pane {
+    flex: 0 0 300px;
+    width: 300px;
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 5;
+    border-right: 1px solid #d0d0d0;
+}
+
+
+
+#video-pane {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    /* Height strictly controlled by JS to match 16:9 ratio of pane width */
+    display: flex;
+    flex-direction: column;
+    background: #fff !important;
+    border-top: 1px solid #ddd;
+    padding-bottom: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+#video-player-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+}
+
+#player-wrapper {
+    aspect-ratio: 16 / 9;
+    margin: 0 auto;
+    max-width: 100%;
+    position: relative;
+    width: auto;
+}
+
+#time-range {
+    padding: 5px 12px 2px 12px;
+    color: #333;
+    font-weight: 600;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+#player-controls {
+    padding: 0 12px 5px 12px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* --- Draggable Resizers --- */
+.resizer-h {
+    width: 10px;
+    cursor: ew-resize;
+    background-color: transparent;
+    flex-shrink: 0;
+    z-index: 50;
+    margin-left: -5px;
+    /* Center handle on border */
+    position: relative;
+    transition: background-color 0.2s;
+}
+
+.resizer-h:hover,
+.resizer-h.resizing {
+    background-color: #0078d4;
+    /* Outlook blue */
+}
+
+/* Prevent iframe from stealing mouse events during resize */
+body.no-select iframe {
+    pointer-events: none !important;
+}
+
+body.no-select {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* --- Transcript Pane (Right Pane) --- */
+#transcript-pane {
+    flex: 0 0 auto;
+    width: 350px;
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    background: #fff;
+    border-left: 1px solid #d0d0d0;
+}
+
+/* Hide resizer on small screens */
+@media (max-width: 768px) {
+    .resizer-h {
+        display: none;
+    }
+}
+
+/* Header Styles (Placeholder) */
+#transcript-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+#transcript-header h2 {
+    margin: 0;
+    padding: 10px 0;
+    border-bottom: none;
+    flex-grow: 1;
+}
+
+/* Header Title Group */
+.header-title-group {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.header-title-group h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: normal;
+    color: #333;
+}
+
+#header-banner {
+    height: 90%;
+    max-height: 60px;
+    margin-left: auto;
+    object-fit: contain;
+}
+
+#transcript-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+#text-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* --- Other Styles --- */
+
+#meeting-list-container,
+#agenda-display {
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+/* Media Query for smaller screens */
+@media (max-width: 768px) {
+    body {
+        height: auto;
+        overflow: auto;
+    }
+
+    #content-container {
+        flex-direction: column;
+    }
+
+    #toc-pane,
+    #left-pane,
+    #transcript-pane {
+        width: 100% !important;
+        height: auto;
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    #toc-pane.unpinned {
+        width: 100% !important;
+        height: 40px;
+    }
+
+    #toc-pane.unpinned::after {
+        content: 'Show Menu';
+        position: static;
+        transform: none;
+        padding: 10px;
+    }
+}
+
+/* Header Styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #ccc !important;
+    background: #fff !important;
+    flex-shrink: 0;
+}
+
+#viewer-menu {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#viewer-menu button {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 0.5rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+#viewer-menu button:hover {
+    background-color: #e0e0e0;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333 !important;
+}
+
+.page-header h1 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+#main-content h2,
+#transcript-pane h2 {
+    font-weight: normal;
+    color: #333 !important;
+    background-color: transparent !important;
+    margin-top: 0;
+    padding: 10px;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #eee;
+}
+
+/* Video Player */
+#player-wrapper {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    background-color: #000;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Scale the actual player content */
+#videoElement {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    background-color: #000;
+}
+
+#playerContainer {
+    /* Create the largest 16:9 box that fits within #player-wrapper */
+    height: 100%;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    width: auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000;
+    margin: 0 auto;
+    /* Center horizontally if width shrinks */
+}
+
+#playerContainer iframe {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+    border: none;
+}
+
+/* Utterances */
+.utterance {
+    display: inline;
+}
+
+.utterance:hover {
+    background-color: #f0f8ff;
+    cursor: pointer;
+}
+
+/* Modals */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    /* Default hidden; JS toggles to flex */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* --- Restored Styles --- */
+
+#text-container p {
+    margin: 0;
+    padding: 0;
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+}
+
+.nav-tab-button {
+    flex-grow: 1;
+    padding: 0.75rem 0.5rem;
+    background: #eee;
+    border: none;
+    border-right: 1px solid #ddd;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #333;
+    transition: background-color 0.2s;
+}
+
+.nav-tab-button:last-child {
+    border-right: none;
+}
+
+.nav-tab-button.active {
+    background: #fff;
+    font-weight: bold;
+    color: #005a9c;
+}
+
+.nav-tab-button:hover:not(.active) {
+    background: #e0e0e0;
+}
+
+#nav-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.nav-tab-content {
+    display: none;
+}
+
+.nav-tab-content.active {
+    display: block;
+}
+
+#text-search-input,
+#speaker-search-input {
+    width: calc(100% - 1rem);
+    padding: 0.5rem;
+    margin: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.search-results {
+    padding: 0 0.5rem;
+    list-style: none;
+}
+
+.search-results li {
+    cursor: pointer;
+    padding: 0.3rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.search-results li:hover {
+    background-color: #f0f0f0;
+}
+
+/* Share Buttons */
+#share-buttons {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+#share-buttons button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 4px;
+}
+
+#share-buttons button:hover {
+    background: #f0f0f0;
+}
+
+#share-buttons svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    color: #005a9c;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+/* YouTube Overrides */
+body.youtube-player-active #player-wrapper {
+    padding-top: 0;
+}
+
+/* --- Print Styles --- */
+@media print {
+
+    /* Hide all non-essential elements */
+    #toc-pane,
+    #left-pane,
+    #video-pane,
+    #player-controls,
+    #viewer-menu,
+    header,
+    .modal,
+    #share-buttons,
+    #time-range,
+    #toc-resize-handle,
+    .nav-header,
+    .nav-tabs,
+    .nav-tab-content {
+        display: none !important;
+    }
+
+    /* Reset layout for print */
+    body,
+    #main-content,
+    #content-container,
+    #transcript-pane,
+    #transcript-container,
+    #text-container {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: static !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: white !important;
+    }
+
+    /* Ensure text is readable */
+    #text-container {
+        font-size: 12pt;
+        line-height: 1.5;
+        color: black;
+        padding: 20px !important;
+    }
+
+    /* Ensure speakers are bold */
+    strong {
+        font-weight: bold !important;
+        color: black !important;
+    }
+
+    /* Ensure links are underlined but black */
+    a {
+        text-decoration: underline;
+        color: black !important;
+    }
+
+    /* Hide scrollbars */
+    ::-webkit-scrollbar {
+        display: none;
+    }
+}

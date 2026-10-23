@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Environment backups and secrets
+.env.local
+*.backup.*
+
+# Local model cache and debug artifacts
+models/
+debug/
+temp_prompt.txt
+temp_completion.txt
+temp_error.txt
+
+# Sample / generated media & transcripts
+*.m4a
+*.mp3
+*.wav
+*.mp4
+*_smarttranscript.json
+*_smarttranscript.html

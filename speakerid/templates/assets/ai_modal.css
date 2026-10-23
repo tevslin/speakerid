@@ -1,0 +1,179 @@
+/* --- AI Analysis Modal (Glassmorphism) --- */
+.ai-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(30, 30, 30, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.ai-modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 20px 60px 0 rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    padding: 0;
+    overflow: hidden;
+    color: #1d1d1f;
+    width: 90%;
+    max-width: 480px;
+}
+
+.ai-modal-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.ai-modal-header h2 {
+    margin: 0 !important;
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    border-bottom: none !important;
+    padding: 0 !important;
+    color: #111 !important;
+}
+
+.ai-options-list {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ai-option {
+    cursor: pointer;
+    position: relative;
+    display: block;
+}
+
+.ai-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.ai-option-card {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.ai-option:hover .ai-option-card {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.ai-option input[type="radio"]:checked+.ai-option-card {
+    background: #fff;
+    border-color: #0078d4;
+    box-shadow: 0 4px 16px rgba(0, 120, 212, 0.12);
+}
+
+.ai-option-logo {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.ai-option-logo svg,
+.ai-option-logo img,
+.ai-logo-img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.ai-option-text h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1d1d1f;
+}
+
+.ai-option-text p {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #555;
+}
+
+.ai-modal-footer {
+    padding: 20px 28px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.ai-cancel-button,
+.ai-go-button {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ai-cancel-button {
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    color: #333;
+}
+
+.ai-cancel-button:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.ai-go-button {
+    background: #0078d4;
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 120, 212, 0.2);
+}
+
+.ai-go-button:hover {
+    background: #005a9e;
+    transform: translateY(-1px);
+}
+
+.openai-logo {
+    color: #10a37f;
+    fill: currentColor;
+}
+
+.gemini-logo {
+    color: #4285f4;
+    fill: currentColor;
+}
+
+.ai-close {
+    font-size: 1.5rem !important;
+    cursor: pointer;
+    border: none;
+    background: none;
+}

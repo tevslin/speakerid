@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTranscripts Viewer (Testy Shell)</title>
+    <link rel="stylesheet" href="/assets/ai_modal.css">
+    <link rel="stylesheet" href="/assets/onboarding.css">
+    <script src="/assets/youtubePlayer.js" defer></script>
+</head>
+
+<body class="shell-active">
+    <!-- 1. GLOBAL HEADER: Full Span -->
+    <header id="global-header">
+        <div class="global-header-title-group">
+            <h1><a href="/index.html"><span id="global-jurisdiction-name-slot"></span> SmartTranscripts™</a></h1>
+        </div>
+        <img id="header-banner" src="/assets/banner.png" alt="Banner" onerror="this.style.display='none'">
+    </header>
+
+    <div id="app-container">
+        <!-- 2. LEFT PANE: Navigation & Global Search -->
+        <aside id="left-pane" class="pane">
+            <div id="left-column-header" class="column-header">
+                <h3 id="left-column-jurisdiction-slot"></h3>
+            </div>
+            <div class="pane-header">
+                <div class="pane-tabs" id="left-nav-tabs">
+                    <button class="pane-tab active" data-tab="toc">Meetings</button>
+                    <button class="pane-tab" data-tab="global-search">Search</button>
+                </div>
+            </div>
+            <div class="pane-content">
+                <div id="toc-tab-content" class="tab-content active">
+                    <div id="toc-wrapper">
+                        <div id="toc-meetings-section">
+                            <div id="toc-header"></div>
+                            <div id="toc-content-slot"></div>
+                        </div>
+                        <div id="toc-links-section" style="display: none;">
+                            <div id="links-header">
+                                <h3>Useful Links</h3>
+                            </div>
+                            <div id="links-container-slot"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="global-search-tab-content" class="tab-content">
+                    <div class="search-box">
+                        <input type="text" id="global-search-input" placeholder="Search all meetings...">
+                        <button id="global-search-button">Search</button>
+                    </div>
+
+                    <div class="search-filters">
+                        <select id="chamber-filter" class="search-filter-select">
+                            <option value="">Any Chamber</option>
+                            <option value="House">House</option>
+                            <option value="Senate">Senate</option>
+                        </select>
+                        <select id="committee-filter" class="search-filter-select" disabled>
+                            <option value="" title="Any Committee">Any Committee</option>
+                        </select>
+                        <select id="sort-filter" class="search-filter-select">
+                            <option value="relevance" selected>Sort: Relevance</option>
+                            <option value="date_desc">Sort: Date (Newest)</option>
+                            <option value="date_asc">Sort: Date (Oldest)</option>
+                        </select>
+                    </div>
+
+                    <div id="search-results-info" class="search-info"></div>
+                    <div id="search-loader" class="search-loader">Searching...</div>
+
+                    <div id="global-search-results-slot" class="search-results"></div>
+                </div>
+            </div>
+            <div id="toc-resize-handle" class="resizer-v"></div>
+        </aside>
+
+        <div id="resizer" class="resizer-h"></div>
+
+        <!-- 3. RIGHT COLUMNS WRAPPER: Contains both Middle and Right panes, sharing a Meeting header -->
+        <div id="right-columns-wrapper">
+            <div id="right-column-header" class="column-header">
+                <h3 id="right-columns-meeting-slot"></h3>
+            </div>
+
+            <div id="right-columns-content">
+                <!-- MIDDLE PANE: Player, Agenda, Contextual Search -->
+                <main id="content-container" class="pane">
+                    <header id="meeting-header" style="display: none;">
+                        <div class="header-left">
+                            <h1 id="meeting-title-slot"></h1>
+                            <p id="meeting-subtitle-slot"></p>
+                        </div>
+                    </header>
+
+                    <div id="video-pane">
+                        <div id="video-player-container">
+                            <div id="time-range">Select text to play a clip.</div>
+                            <div id="player-controls">
+                                <button id="play-clip-button" class="icon-button" disabled title="Play Clip">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                </button>
+                                <button id="play-full-video-button" class="icon-button" title="Play Full Video">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div id="player-wrapper">
+                                <video id="videoElement" style="display: none; width: 100%; height: 100%;"></video>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pane-header">
+                        <div class="pane-tabs" id="middle-nav-tabs">
+                            <button id="agenda" class="pane-tab active" data-tab="agenda">Agenda</button>
+                            <button class="pane-tab" data-tab="contextual-search">Text</button>
+                            <button class="pane-tab" data-tab="speakers">Speakers</button>
+                        </div>
+                    </div>
+
+                    <div id="middle-pane-content" class="pane-content">
+                        <div id="agenda-tab-content" class="tab-content active">
+                            <div id="agenda-slot"></div>
+                        </div>
+                        <div id="contextual-search-tab-content" class="tab-content">
+                            <div class="search-box">
+                                <input type="text" id="contextual-search-input" placeholder="Search this meeting...">
+                                <button id="contextual-search-button">Search</button>
+                            </div>
+                            <div id="contextual-search-results-slot" class="search-results"></div>
+                        </div>
+                        <div id="speakers-tab-content" class="tab-content">
+                            <div id="speakers-slot"></div>
+                        </div>
+                    </div>
+                </main>
+
+                <div id="resizer-right" class="resizer-h"></div>
+
+                <!-- 3. RIGHT PANE: Transcript -->
+                <section id="transcript-pane" class="pane">
+                    <div class="pane-header">
+                        <h3>Transcript: Select text below to play or share a clip.</h3>
+                        <div id="viewer-menu">
+                            <div class="menu-item">
+                                <button>File</button>
+                                <ul class="dropdown-menu">
+                                    <li id="print-button">Print Transcript</li>
+                                    <li id="save-button">Download Transcript (.txt)</li>
+                                </ul>
+                            </div>
+                            <button id="share-button">Share</button>
+                            <div class="menu-item">
+                                <button id="ai-analysis-button">AI Analysis</button>
+                                <ul class="dropdown-menu" id="ai-dropdown">
+                                    <li onclick="window.open('https://chatgpt.com', '_blank')">ChatGPT</li>
+                                    <li onclick="window.open('https://gemini.google.com', '_blank')">Gemini</li>
+                                    <li onclick="window.open('https://grok.com', '_blank')">Grok</li>
+                                </ul>
+                            </div>
+                            <div class="menu-item">
+                                <button>Help</button>
+                                <ul class="dropdown-menu">
+                                    <li id="demo-button">Tutorial</li>
+                                    <li id="about-button">About</li>
+                                    <li id="contact-button">Contact&nbsp;Us</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="text-container" class="pane-content" style="position: relative;">
+                        <div id="transcript-loading-overlay"
+                            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.75); z-index: 50; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: bold; color: #555; backdrop-filter: blur(2px);">
+                            Viewer Loading...
+                        </div>
+                        <div id="transcript-slot"></div>
+                    </div>
+                </section>
+            </div> <!-- End of #right-columns-content -->
+        </div> <!-- End of #right-columns-wrapper -->
+    </div>
+
+    <!-- Modals -->
+    <div id="share-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Share</h2>
+            <div id="share-clip-options"
+                style="display: none; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 4px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="share-clip-checkbox" checked>
+                    <span>Share selected clip <span id="share-time-range"
+                            style="font-size: 0.9em; opacity: 0.7;"></span></span>
+                </label>
+            </div>
+            <div id="share-buttons"></div>
+        </div>
+    </div>
+
+    <div id="about-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="about-content">Loading...</div>
+            <button id="about-ok-button"
+                style="margin-top: 15px; padding: 10px 20px; font-weight: bold; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%;">OK</button>
+        </div>
+    </div>
+
+    <div id="ai-analysis-modal" class="ai-modal" style="display: none;">
+        <div class="ai-modal-content" id="ai-selection-view">
+            <div class="ai-modal-header">
+                <h2>AI Analysis</h2>
+                <button class="ai-close">&times;</button>
+            </div>
+            <div class="ai-options-list">
+                <label class="ai-option">
+                    <input type="radio" name="ai-service" value="chatgpt" checked>
+                    <div class="ai-option-card">
+                        <div class="ai-option-logo openai-logo">
+                            <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M11.248 18.25q-.825 0-1.568-.314a4.3 4.3 0 0 1-1.32-.874 4 4 0 0 1-1.304.214 4 4 0 0 1-2.046-.544 4.27 4.27 0 0 1-1.518-1.485 4 4 0 0 1-.56-2.095q0-.48.131-1.04A4.4 4.4 0 0 1 2.04 10.71a4.07 4.07 0 0 1 .017-3.4 4.2 4.2 0 0 1 1.056-1.418 3.8 3.8 0 0 1 1.6-.842 3.9 3.9 0 0 1 .76-1.683q.593-.759 1.451-1.188a4.04 4.04 0 0 1 1.832-.429q.825 0 1.567.313.742.314 1.32.875a4 4 0 0 1 1.304-.215q1.106 0 2.046.545a4.14 4.14 0 0 1 1.501 1.485q.578.941.578 2.095 0 .48-.132 1.04.66.61 1.023 1.419.363.792.363 1.666 0 .892-.38 1.717a4.3 4.3 0 0 1-1.072 1.435 3.8 3.8 0 0 1-1.584.825 3.8 3.8 0 0 1-.775 1.683 4.06 4.06 0 0 1-1.436 1.188 4.04 4.04 0 0 1-1.832.429m-4.076-2.062q.825 0 1.435-.347l3.103-1.782a.36.36 0 0 0 .164-.313v-1.42L7.881 14.62a.67.67 0 0 1-.726 0l-3.118-1.798a.5.5 0 0 1-.017.115v.198q0 .841.396 1.551.413.693 1.139 1.089a3.2 3.2 0 0 0 1.617.412m.165-2.69a.4.4 0 0 0 .181.05q.083 0 .165-.05l1.238-.71-3.977-2.31a.7.7 0 0 1-.363-.643v-3.58q-.825.362-1.32 1.122a2.9 2.9 0 0 0-.495 1.65q0 .809.413 1.55.412.743 1.072 1.123zm3.91 3.663q.875 0 1.585-.396a2.96 2.96 0 0 0 1.534-2.64v-3.564a.32.32 0 0 0-.165-.297l-1.254-.726v4.604a.7.7 0 0 1-.363.643l-3.119 1.799a3 3 0 0 0 1.783.577m.627-6.039V8.878L10.01 7.822 8.129 8.878v2.244l1.881 1.056zM7.057 5.859a.7.7 0 0 1 .363-.644l3.119-1.798a3 3 0 0 0-1.782-.578q-.874 0-1.584.396A2.96 2.96 0 0 0 6.05 4.324a3.07 3.07 0 0 0-.396 1.551v3.547q0 .199.165.314l1.237.726zm8.383 7.887q.825-.364 1.303-1.123.495-.758.495-1.65a3.15 3.15 0 0 0-.412-1.55q-.413-.743-1.073-1.123l-3.086-1.782q-.099-.065-.181-.049a.3.3 0 0 0-.165.05l-1.238.692 3.993 2.327a.6.6 0 0 1 .264.264.64.64 0 0 1 .1.363zm-3.317-8.382a.63.63 0 0 1 .726 0l3.135 1.831v-.297q0-.792-.396-1.501a2.86 2.86 0 0 0-1.105-1.155q-.71-.43-1.65-.43-.825 0-1.436.347L8.294 5.941a.36.36 0 0 0-.165.314v1.418z" />
+                            </svg>
+                        </div>
+                        <div class="ai-option-text">
+                            <h3>ChatGPT</h3>
+                            <p><strong>Requires an account.</strong> This custom GPT will allow you to ask questions
+                                based on the meeting transcript and will provide time-stamped links back to portions of
+                                the SmartTranscript supporting its answers. You will have to paste the meeting link,
+                                which is already on the clipboard, into the chat bubble when the custom GPT opens.</p>
+                        </div>
+                    </div>
+                </label>
+                <label class="ai-option">
+                    <input type="radio" name="ai-service" value="gemini">
+                    <div class="ai-option-card">
+                        <div class="ai-option-logo">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M11.606 20.778c.02.043.05.081.088.112.038.03.082.052.13.063a.4.4 0 0 0 .193-.008.38.38 0 0 0 .156-.1c.03-.028.053-.062.067-.1l.006-.015c.677-1.802 1.795-3.415 3.242-4.678 1.446-1.263 3.193-2.181 5.064-2.661.045-.011.085-.035.117-.067.031-.032.053-.072.064-.116.011-.044.011-.09 0-.134a.39.39 0 0 0-.056-.123.4.4 0 0 0-.11-.092.38.38 0 0 0-.142-.05l-.015-.002c-1.897-.424-3.666-1.312-5.127-2.574-1.46-1.262-2.607-2.863-3.323-4.644a.41.41 0 0 0-.083-.133.38.38 0 0 0-.13-.09.39.39 0 0 0-.154-.035.4.4 0 0 0-.16.03l-.015.006c-1.802.677-3.415 1.795-4.678 3.242-1.263 1.446-2.181 3.193-2.661 5.064a.4.4 0 0 0 .116.345c.032.031.072.053.116.064.044.011.09.011.134 0a.39.39 0 0 0 .123-.056l.015-.004c1.897-.424 3.666-1.312 5.127-2.574 1.46-1.262 2.607-2.863 3.323-4.644"
+                                    fill="#4285F4" />
+                                <path
+                                    d="M7.749 11.231c-1.345.448-2.594 1.252-3.655 2.345a.4.4 0 0 0 .025.592c.045.035.1.055.156.059l.019.001c2.127 0 4.089-1.245 5.037-3.134"
+                                    fill="#34A853" />
+                                <path
+                                    d="M8.819 13.105c-.227-.674-.227-1.403 0-2.077V9.516c-.78 1.554-.78 3.344 0 4.899l1.856-1.31"
+                                    fill="#FBBC04" />
+                                <path
+                                    d="M12 6.25c.844-.012 1.654.308 2.251.892l1.687-1.687C14.931 4.54 13.51 4 12 4c-2.127 0-4.089 1.245-5.037 3.134l1.856 1.511c.448-1.345 1.7-2.345 3.181-2.345"
+                                    fill="#EA4335" />
+                            </svg>
+                        </div>
+                        <div class="ai-option-text">
+                            <h3>Gemini</h3>
+                            <p><strong>Requires an account.</strong> Gemini will analyze the transcript of this meeting,
+                                provide a summary, and allow further questions. You will have to paste the meeting link,
+                                which is already on the clipboard, into the chat bubble when Gemini opens.</p>
+                        </div>
+                    </div>
+                </label>
+                <label class="ai-option">
+                    <input type="radio" name="ai-service" value="grok">
+                    <div class="ai-option-card">
+                        <div class="ai-option-logo">
+                            <img src="/assets/grok_logo.png" alt="Grok" class="ai-logo-img">
+                        </div>
+                        <div class="ai-option-text">
+                            <h3>Grok</h3>
+                            <p><strong>Does NOT require an account.</strong> Grok will analyze the transcript of this
+                                meeting and look for other web sources, provide a summary, and allow further questions.
+                                You do NOT have to paste the meeting link into Grok.</p>
+                        </div>
+                    </div>
+                </label>
+            </div>
+            <div class="ai-modal-footer">
+                <button class="ai-cancel-button">Cancel</button>
+                <button class="ai-go-button">Analyze</button>
+            </div>
+        </div>
+
+        <div class="ai-modal-content" id="ai-confirmation-view" style="display: none;">
+            <div class="ai-modal-header">
+                <h2 id="ai-confirm-title">Confirm Analysis</h2>
+                <button class="ai-close">&times;</button>
+            </div>
+            <div class="ai-confirm-body" style="padding: 20px;">
+                <p id="ai-confirm-message"></p>
+            </div>
+            <div class="ai-modal-footer">
+                <button class="ai-back-button">Back</button>
+                <button class="ai-proceed-button">Connect to LLM</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboarding Templates -->
+    <template id="onboarding-popup-template">
+        <div class="onboarding-popup">
+            <h4 class="popup-title"></h4>
+            <div class="popup-content"></div>
+            <div class="onboarding-checkbox" style="display: none;">
+                <input type="checkbox" id="onboarding-dont-show">
+                <label for="onboarding-dont-show">Don't show again</label>
+            </div>
+            <div class="onboarding-buttons">
+                <button class="onboarding-btn secondary-btn" id="btn-show-again" style="display:none;">Show
+                    Again</button>
+                <button class="onboarding-btn secondary-btn" id="btn-show-me" style="display:none;">Show Me</button>
+                <button class="onboarding-btn primary-btn" id="btn-got-it" style="display:none;">Got It</button>
+                <button class="onboarding-btn primary-btn" id="btn-ok" style="display:none;">OK</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="share-illustration-template">
+        <div class="share-mockup">
+            <div class="mock-header">Share</div>
+            <div class="mock-row"><input type="checkbox" checked disabled> Share as clip <span
+                    class="mock-time-range">(00:00 - 00:00)</span></div>
+            <div class="mock-icons">
+                <div class="mock-icon" title="Email"><svg viewBox="0 0 24 24">
+                        <path
+                            d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                    </svg></div>
+                <div class="mock-icon" title="Copy"><svg viewBox="0 0 24 24">
+                        <path
+                            d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                    </svg></div>
+                <div class="mock-icon" title="Facebook"><svg viewBox="0 0 24 24">
+                        <path
+                            d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2m13 2h-2.5a3.5 3.5 0 0 0-3.5 3.5V11h-2v3h2v7h3v-7h3v-3h-3V8.5A1.5 1.5 0 0 1 15 7h3V5z" />
+                    </svg></div>
+                <div class="mock-icon" title="X"><svg viewBox="0 0 24 24">
+                        <path
+                            d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg></div>
+                <div class="mock-icon" title="LinkedIn"><svg viewBox="0 0 24 24">
+                        <path
+                            d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-11 4H5v11h3V7m-1.5-2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 2h-2.5c-2 0-2.5 1-2.5 2.5V11h3v3h-3v5h-3v-5H9v-3h2.5V9.5C11.5 7 13 6 15 6h2.5v3z" />
+                    </svg></div>
+                <div class="mock-icon" title="WhatsApp"><svg viewBox="0 0 24 24">
+                        <path
+                            d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zM12.04 20.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31c-.82-1.31-1.26-2.83-1.26-4.38 0-4.54 3.7-8.24 8.24-8.24 4.54 0 8.24 3.7 8.24 8.24s-3.7 8.24-8.24 8.24zm4.52-6.13c-.25-.12-1.47-.72-1.7-.81-.23-.09-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.06-.39-2.02-1.25-.75-.67-1.25-1.5-1.4-1.75-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.09-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.42h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.88 2.4 1 2.56.12.17 1.76 2.67 4.25 3.73.59.25 1.05.41 1.41.52.6.19 1.14.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.05-.12-.2-.19-.44-.31z" />
+                    </svg></div>
+            </div>
+        </div>
+        <p style="margin-top:0">The share dialog allows you to copy links or share directly to social media.</p>
+    </template>
+</body>
+
+</html>

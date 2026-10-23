@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "speakerid"
+version = "0.1.0"
+description = "Local GPU-accelerated SmartTranscripts™ generator (WhisperX ASR + PyAnnote Diarization + Pluggable Local/Remote LLM Speaker ID, Derived Agenda & Summaries)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Tom Evslin"}
+]
+dependencies = [
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+gpu = [
+    "torch>=2.1.0",
+    "torchaudio>=2.1.0",
+    "pytorch-lightning>=2.2.0",
+    "pyannote.audio>=3.1.1",
+    "whisperx @ git+https://github.com/m-bain/whisperx.git",
+    "numpy<2",
+]
+gemini = [
+    "google-genai>=1.0.0",
+]
+litellm = [
+    "litellm>=1.40.0",
+]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[project.scripts]
+speakerid = "speakerid.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["speakerid*"]
+
+[tool.setuptools.package-data]
+"speakerid.templates" = ["*.html", "assets/*"]
