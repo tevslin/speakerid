@@ -119,8 +119,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     asr_group.add_argument(
         "--device",
         default="auto",
-        choices=["auto", "cuda", "mps", "cpu"],
-        help="Compute device for WhisperX and PyAnnote (default: auto -> CUDA on NVIDIA PC/Linux, MPS/CPU on Apple Silicon Mac, CPU fallback).",
+        choices=["auto", "cuda", "mps", "mlx", "cpu"],
+        help="Compute device for WhisperX and PyAnnote (default: auto -> CUDA on NVIDIA PC/Linux, MLX/MPS on Apple Silicon Mac, CPU fallback).",
     )
     asr_group.add_argument(
         "--compute-type",

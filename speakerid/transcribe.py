@@ -144,13 +144,49 @@ def get_diarization_pipeline(device: str, hf_token: Optional[str] = None) -> Any
     return _diarize_pipeline
 
 
+MLX_WHISPER_REPOS: Dict[str, str] = {
+    "large-v3": "mlx-community/whisper-large-v3-mlx",
+    "large-v3-turbo": "mlx-community/whisper-large-v3-turbo",
+    "turbo": "mlx-community/whisper-large-v3-turbo",
+    "large-v2": "mlx-community/whisper-large-v2-mlx",
+    "large": "mlx-community/whisper-large-v3-mlx",
+    "medium": "mlx-community/whisper-medium-mlx",
+    "medium.en": "mlx-community/whisper-medium.en-mlx",
+    "small": "mlx-community/whisper-small-mlx",
+    "small.en": "mlx-community/whisper-small.en-mlx",
+    "base": "mlx-community/whisper-base-mlx",
+    "base.en": "mlx-community/whisper-base.en-mlx",
+    "tiny": "mlx-community/whisper-tiny-mlx",
+    "tiny.en": "mlx-community/whisper-tiny.en-mlx",
+}
+
+
+def has_mlx_whisper() -> bool:
+    """Returns True if `mlx_whisper` is installed and usable on Apple Silicon Metal GPU."""
+    try:
+        import mlx.core as mx
+        import mlx_whisper  # noqa: F401
+
+        return bool(mx.metal.is_available())
+    except Exception:
+        return False
+
+
+def resolve_mlx_model_repo(model_name: str) -> str:
+    """Maps a standard Whisper model identifier (e.g. 'large-v3') to its Hugging Face MLX repository."""
+    if "/" in model_name or os.path.exists(model_name):
+        return model_name
+    return MLX_WHISPER_REPOS.get(model_name, f"mlx-community/whisper-{model_name}-mlx")
+
+
 def resolve_compute_device_and_type(
     device: str = "auto",
     compute_type: str = "auto",
 ) -> Tuple[Tuple[str, str], str]:
     """
     Resolves `(whisper_device, whisper_compute_type)` and `torch_device` across
-    Windows/Linux (CUDA/CPU) and macOS Apple Silicon (MPS for Torch + CPU/int8 for Faster-Whisper).
+    Windows/Linux (CUDA/CPU) and macOS Apple Silicon (MLX Metal GPU for ASR if available,
+    otherwise CPU/int8 for Faster-Whisper, plus MPS for PyTorch alignment & diarization).
     """
     import torch
 
@@ -166,20 +202,29 @@ def resolve_compute_device_and_type(
             torch_dev = "cuda"
             whisper_comp = "float16" if req_compute in ("auto", "float16") else req_compute
         elif has_mps and req_device == "auto":
-            logger.info("Apple Silicon MPS detected: using CPU/int8 for CTranslate2 ASR and MPS for alignment/diarization.")
-            whisper_dev = "cpu"
+            if has_mlx_whisper():
+                logger.info("Apple Silicon GPU detected: using MLX Metal (float16) for Whisper ASR and MPS for alignment/diarization.")
+                whisper_dev = "mlx"
+                whisper_comp = "float16" if req_compute == "auto" else req_compute
+            else:
+                logger.info("Apple Silicon MPS detected: using CPU/int8 for CTranslate2 ASR and MPS for alignment/diarization.")
+                whisper_dev = "cpu"
+                whisper_comp = "int8" if req_compute in ("auto", "float16") else req_compute
             torch_dev = "mps"
-            whisper_comp = "int8" if req_compute in ("auto", "float16") else req_compute
         else:
             if req_device == "cuda":
                 logger.warning("CUDA requested but not available. Falling back to CPU (int8).")
             whisper_dev = "cpu"
             torch_dev = "cpu"
             whisper_comp = "int8" if req_compute in ("auto", "float16") else req_compute
-    elif req_device == "mps":
-        whisper_dev = "cpu"
+    elif req_device in ("mps", "mlx"):
+        if has_mlx_whisper():
+            whisper_dev = "mlx"
+            whisper_comp = "float16" if req_compute == "auto" else req_compute
+        else:
+            whisper_dev = "cpu"
+            whisper_comp = "int8" if req_compute in ("auto", "float16") else req_compute
         torch_dev = "mps" if has_mps else "cpu"
-        whisper_comp = "int8" if req_compute in ("auto", "float16") else req_compute
     else:
         whisper_dev = "cpu"
         torch_dev = "cpu"
@@ -471,7 +516,6 @@ def transcribe_audio_raw(
             f"Running WhisperX ASR transcription (model={model_name}, device={whisper_device}, compute_type={whisper_compute})..."
         )
         t0 = time.time()
-        model = get_whisper_model(model_name, whisper_device, whisper_compute)
 
         config = dict(DEFAULT_WHISPER_CONFIG)
         if whisper_config:
@@ -481,40 +525,85 @@ def transcribe_audio_raw(
             initial_prompt = clean_initial_prompt(initial_prompt)
             logger.info(f"Cleaned initial_prompt ({len(initial_prompt)} chars)")
 
-        original_options = model.options
-        new_opts: Dict[str, Any] = {}
-        valid_fields = {field.name for field in dataclasses.fields(model.options)}
+        if whisper_device == "mlx":
+            import mlx.core as mx
+            import mlx_whisper
 
-        for k, v in config.items():
-            if k in valid_fields:
-                if k == "temperature" and isinstance(v, list) and "temperatures" in valid_fields:
-                    new_opts["temperatures"] = [float(t) for t in v]
-                elif k == "temperatures" and isinstance(v, list):
-                    new_opts["temperatures"] = [float(t) for t in v]
-                else:
-                    new_opts[k] = v
+            mlx_repo = resolve_mlx_model_repo(model_name)
+            if initial_prompt:
+                words = initial_prompt.split()
+                if len(words) > 300:
+                    initial_prompt = " ".join(words[:300])
 
-        if initial_prompt:
+            temp_val = config.get("temperature", (0.0, 0.2, 0.4, 0.6, 0.8, 1.0))
+            if isinstance(temp_val, list):
+                temp_val = tuple(float(t) for t in temp_val)
+
+            mlx_kwargs: Dict[str, Any] = {
+                "path_or_hf_repo": mlx_repo,
+                "temperature": temp_val,
+                "compression_ratio_threshold": config.get("compression_ratio_threshold", 2.0),
+                "logprob_threshold": config.get("log_prob_threshold", -1.0),
+                "no_speech_threshold": config.get("no_speech_threshold", 0.6),
+                "condition_on_previous_text": config.get("condition_on_previous_text", True),
+                "initial_prompt": initial_prompt,
+            }
+            if language:
+                mlx_kwargs["language"] = language
+
+            result = mlx_whisper.transcribe(audio, **mlx_kwargs)
+            result["segments"] = [
+                {
+                    "start": float(seg.get("start", 0.0)),
+                    "end": float(seg.get("end", 0.0)),
+                    "text": str(seg.get("text", "")),
+                }
+                for seg in result.get("segments", [])
+            ]
             try:
-                tokenizer = getattr(model.model, "hf_tokenizer", None)
-                if tokenizer:
-                    truncated = truncate_prompt_tokens(initial_prompt, tokenizer, max_tokens=400)
-                    if len(truncated) < len(initial_prompt):
-                        logger.info(
-                            f"Truncated initial_prompt from {len(initial_prompt)} to {len(truncated)} chars (400 token limit)."
-                        )
-                        initial_prompt = truncated
-            except Exception as e:
-                logger.warning(f"Error truncating initial prompt: {e}")
-            new_opts["initial_prompt"] = initial_prompt
+                if hasattr(mx, "clear_cache"):
+                    mx.clear_cache()
+                else:
+                    mx.metal.clear_cache()
+            except Exception:
+                pass
+        else:
+            model = get_whisper_model(model_name, whisper_device, whisper_compute)
 
-        if new_opts:
-            model.options = dataclasses.replace(model.options, **new_opts)
+            original_options = model.options
+            new_opts: Dict[str, Any] = {}
+            valid_fields = {field.name for field in dataclasses.fields(model.options)}
 
-        try:
-            result = model.transcribe(audio, batch_size=batch_size, language=language)
-        finally:
-            model.options = original_options
+            for k, v in config.items():
+                if k in valid_fields:
+                    if k == "temperature" and isinstance(v, list) and "temperatures" in valid_fields:
+                        new_opts["temperatures"] = [float(t) for t in v]
+                    elif k == "temperatures" and isinstance(v, list):
+                        new_opts["temperatures"] = [float(t) for t in v]
+                    else:
+                        new_opts[k] = v
+
+            if initial_prompt:
+                try:
+                    tokenizer = getattr(model.model, "hf_tokenizer", None)
+                    if tokenizer:
+                        truncated = truncate_prompt_tokens(initial_prompt, tokenizer, max_tokens=400)
+                        if len(truncated) < len(initial_prompt):
+                            logger.info(
+                                f"Truncated initial_prompt from {len(initial_prompt)} to {len(truncated)} chars (400 token limit)."
+                            )
+                            initial_prompt = truncated
+                except Exception as e:
+                    logger.warning(f"Error truncating initial prompt: {e}")
+                new_opts["initial_prompt"] = initial_prompt
+
+            if new_opts:
+                model.options = dataclasses.replace(model.options, **new_opts)
+
+            try:
+                result = model.transcribe(audio, batch_size=batch_size, language=language)
+            finally:
+                model.options = original_options
 
         transcribe_time = time.time() - t0
         detected_language = result.get("language", language or "en")
@@ -536,6 +625,9 @@ def transcribe_audio_raw(
                 return_char_alignments=False,
             )
             align_time = time.time() - t0
+            if torch_device == "mps" and hasattr(torch, "mps"):
+                gc.collect()
+                torch.mps.empty_cache()
         except Exception as e:
             logger.warning(f"Phonetic alignment failed ({e}); falling back to segment-level timestamps.")
 
@@ -547,8 +639,29 @@ def transcribe_audio_raw(
             logger.info(f"Running PyAnnote speaker diarization (device={torch_device})...")
             try:
                 t0 = time.time()
-                pipeline = get_diarization_pipeline(torch_device, hf_token)
-                diarize_segments = pipeline(audio)
+                try:
+                    pipeline = get_diarization_pipeline(torch_device, hf_token)
+                    diarize_segments = pipeline(audio)
+                except RuntimeError as oom_err:
+                    if torch_device == "mps" and "out of memory" in str(oom_err).lower():
+                        logger.warning(
+                            "MPS out of memory during diarization; clearing MPS cache and falling back to CPU for PyAnnote..."
+                        )
+                        if hasattr(torch, "mps"):
+                            gc.collect()
+                            torch.mps.empty_cache()
+                        import whisperx.diarize
+
+                        cpu_pipeline = whisperx.diarize.DiarizationPipeline(
+                            model_name=os.environ.get(
+                                "SPEAKERID_DIARIZE_MODEL", "pyannote/speaker-diarization-3.1"
+                            ),
+                            token=hf_token or os.environ.get("HF_TOKEN"),
+                            device="cpu",
+                        )
+                        diarize_segments = cpu_pipeline(audio)
+                    else:
+                        raise
                 result = whisperx.assign_word_speakers(diarize_segments, result)
                 diarize_time = time.time() - t0
             except Exception as e:
@@ -557,6 +670,8 @@ def transcribe_audio_raw(
         gc.collect()
         if torch_device == "cuda":
             torch.cuda.empty_cache()
+        elif torch_device == "mps" and hasattr(torch, "mps"):
+            torch.mps.empty_cache()
 
         result["diagnostics"] = {
             "transcribe_time": round(transcribe_time, 3),

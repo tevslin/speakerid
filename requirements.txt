@@ -12,6 +12,7 @@ torchvision==0.23.0
 pytorch-lightning>=2.2.0
 pyannote.audio>=3.1.1
 git+https://github.com/m-bain/whisperx.git
+mlx-whisper>=0.4.0; sys_platform == 'darwin' and platform_machine == 'arm64'
 
 # Optional SDKs (Note: Ollama, OpenAI-compatible, vLLM, LM Studio, Anthropic, and Gemini REST work out-of-the-box via standard library HTTP)
 google-genai>=1.0.0

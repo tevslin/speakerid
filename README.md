@@ -30,7 +30,7 @@ Unlike a conventional raw transcript, a **SmartTranscript™** combines four syn
 | :--- | :--- | :--- |
 | **Windows PC** | NVIDIA GPU (CUDA 12.x) | Uses `cuda` (`float16`) for WhisperX ASR, Wav2Vec2 alignment, and PyAnnote diarization. |
 | **Linux** | NVIDIA GPU (CUDA 12.x) | Uses `cuda` (`float16`) for WhisperX ASR, Wav2Vec2 alignment, and PyAnnote diarization. |
-| **macOS** | Apple Silicon (M1/M2/M3/M4) | Uses `cpu` (`int8`) for CTranslate2 ASR and Apple Metal (`mps`) for PyTorch alignment & diarization. |
+| **macOS** | Apple Silicon (M1/M2/M3/M4) | Uses `mlx` (`float16` Apple Metal GPU) for Whisper ASR (falls back to `cpu`/`int8` if `mlx-whisper` is absent) and Apple Metal (`mps`) for PyTorch alignment & diarization. |
 | **Any OS** | CPU-only | Automatically falls back to `cpu` (`int8`). |
 
 ---
